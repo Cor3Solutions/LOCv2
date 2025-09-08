@@ -182,21 +182,55 @@ navLinks.forEach((link) => {
 });
 
 //email
-document.getElementById("emailForm").addEventListener("submit", function(event) {
-  event.preventDefault();
+document
+  .getElementById("emailForm")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
 
-  // Get form values
-  const name = this.name.value;
-  const fromEmail = this.email.value;
-  const subject = this.subject.value;
-  const message = this.message.value;
+    // Get form values
+    const name = this.name.value;
+    const fromEmail = this.email.value;
+    const subject = this.subject.value;
+    const message = this.message.value;
 
-  // Build email body
-  const body = `Name: ${name}%0D%0AEmail: ${fromEmail}%0D%0A%0D%0A${message}`;
+    // Build email body
+    const body = `Name: ${name}%0D%0AEmail: ${fromEmail}%0D%0A%0D%0A${message}`;
 
-  // Replace with YOUR email address
-  const recipient = "lakeocali@gmail.com";
+    // Replace with YOUR email address
+    const recipient = "lakeocali@gmail.com";
 
-  // Open email client
-  window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${body}`;
+    // Open email client
+    window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(
+      subject
+    )}&body=${body}`;
+  });
+
+document.querySelectorAll(".modal").forEach((modalEl) => {
+  modalEl.addEventListener("shown.bs.modal", () => {
+    history.pushState({ modalId: modalEl.id }, "");
+  });
+
+  modalEl.addEventListener("hidden.bs.modal", () => {
+    if (history.state?.modalId === modalEl.id) {
+      history.back();
+    }
+  });
+});
+
+window.addEventListener("popstate", (event) => {
+  if (event.state?.modalId) {
+    // Close the modal if open
+    const modalEl = document.getElementById(event.state.modalId);
+    if (modalEl) {
+      const modalInstance = bootstrap.Modal.getInstance(modalEl);
+      if (modalInstance) modalInstance.hide();
+    }
+  } else {
+    // No modal open
+    if (window.scrollY > 50) {
+      // Scroll to top instead of exiting
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      history.pushState({}, ""); // prevent immediate exit
+    }
+  }
 });
